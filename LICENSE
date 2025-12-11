@@ -1,53 +1,46 @@
-Tiny Core License (TCL) v1.0
+Tiny Core License (TCL) v1.1
 Copyright (c) 2025 Coni Shadow
 
 1. Definitions
 
-1.1 Software: Any program, emulator, simulator, compiler, or tool that implements, interprets, or simulates the TinyCoreCPU (TCC) specification.
-1.2 Hardware: Any physical device, console, or chip that implements the TCC specification in silicon, FPGA, or other tangible form.
-1.3 TCC Specification: The architectural and operational specification of the TinyCoreCPU.
-1.4 Contributor: Any person who distributes, modifies, or creates derivative works of the Software or Hardware.
-1.5 Attribution: Recognition of original creator(s) in documentation, source files, device labeling, or other publicly visible forms.
+1.1 "Software" means any program, emulator, simulator, compiler, or tool that implements, interprets, or simulates the TinyCoreCPU (TCC) specification.
+1.2 "Hardware" means any physical device, console, or chip that implements the TCC specification in silicon, FPGA, or other tangible form.
+1.3 "TCC Specification" means the architectural and operational specification of the TinyCoreCPU.
+1.4 "Contributor" means any person who distributes, modifies, or creates derivative works of the Software or Hardware.
+1.5 "Attribution" means clear credit to the original creator(s) in documentation, source files, device labeling, or other publicly visible forms, with proper credit to prior contributors in a nested manner.
 
 2. Permissions
 
 2.1 Software Use and Modification:
-  - You may use, copy, modify, and distribute the Software or TCC Specification.
-  - Any derivative works or forks must include attribution to the original creator(s) and all prior contributors in a nested manner (each fork credits its source and the original creator).
+    a. You may use, copy, modify, and distribute the Software and TCC Specification.
+    b. Any derivative works or forks of the Software must include Attribution to the original creator(s) and all prior contributors in a clear and reasonable manner.
+    c. You may not sell the Software or any derivative software that implements or simulates the TCC Specification.
 
 2.2 Hardware Use and Distribution:
-  - You may create, sell, or distribute Hardware implementing the TCC Specification.
-  - Attribution to the original creator(s) is required.
-  - Hardware blueprints, designs, or source files must be open and publicly available under a compatible license.
-  - No royalties, fees, or licenses are owed to the original creator(s) for Hardware distribution.
+    a. You may create, sell, or distribute Hardware implementing the TCC Specification.
+    b. Attribution to the original creator(s) is required in a visible or documented manner.
+    c. Hardware blueprints, designs, or source files for such Hardware must be open and publicly available under a license compatible with these terms.
+    d. No royalties or fees are owed to the original creator(s) for Hardware distribution.
 
 3. Restrictions
 
-3.1 Software Sales Prohibited:
-  - You may not sell software emulators or derivative software implementing the TCC Specification.
-
-3.2 No Obfuscation of Attribution:
-  - You may not remove, obscure, or falsify attribution of original creator(s) or prior contributors.
-
-3.3 License Compliance:
-  - Any distribution of Software or Hardware constitutes acceptance of this License.
-  - Failure to comply with these terms terminates your rights under this License.
+3.1 You may not remove, obscure, or falsify Attribution.
+3.2 Any distribution of Software or Hardware constitutes acceptance of this License.
+3.3 Failure to comply with these terms terminates your rights under this License automatically.
 
 4. Disclaimer of Warranty and Liability
 
-- The Software and TCC Specification are provided “as-is”, without warranty of any kind.
-- The original creator(s) and contributors are not liable for any damages, including but not limited to direct, indirect, incidental, or consequential damages arising from use, modification, or distribution of the Software or Hardware.
+4.1 The Software and TCC Specification are provided "as-is", without warranty of any kind.
+4.2 The original creator(s) and contributors are not liable for any damages, including but not limited to direct, indirect, incidental, or consequential damages arising from use, modification, or distribution of the Software or Hardware.
 
 5. Enforceability
 
-- This License is intended to be enforceable under applicable copyright and contract law.
-- If any provision is held invalid or unenforceable, the remaining provisions remain in full force and effect.
+5.1 This License is intended to be legally enforceable under applicable copyright and contract law.
+5.2 If any provision is held invalid or unenforceable, the remaining provisions remain in full force and effect.
 
-Notes for Developers
+6. Interpretation Notes
 
-- Attribution example (Software): Include in README, source files, or documentation:
-    "Derived from TinyCoreCPU by [Original Creator(s)]"
+6.1 Attribution must be reasonable, visible, and clearly associated with the work.
+6.2 "Derivative works" include any modification, fork, or extension of the Software or Hardware that implements or simulates the TCC Specification.
+6.3 Compliance with this License does not grant permission to infringe other intellectual property rights outside the scope of this License.
 
-- Attribution example (Hardware): Include in device labeling, manuals, or schematics.
-
-- Allowed Hardware Commercial Use: You may sell physical devices running TCC without paying royalties, but blueprints or designs to the hardware must be open.
