@@ -23,6 +23,10 @@ namespace TinyCoreCPU
                 0x11 => true,  // PXY
                 0x12 => true,  // COL
                 0x13 => false, // DRW
+                0x14 => false, // AND
+                0x15 => false, // OR
+                0x16 => false, // XOR
+                0x17 => false, // NOT
                 0x20 => true,  // JMP
                 0x21 => true,  // JZ
                 0x22 => true,  // JNZ
@@ -43,13 +47,13 @@ namespace TinyCoreCPU
                 case 0x01: // LOAD_A
                     cpu.A = operand;
                     cpu.FLAGZ = cpu.A == 0;
-                    cpu.FLAGN = cpu.A >= 128;
+                    cpu.FLAGN = (cpu.A & 0x80) != 0;
                     break;
 
                 case 0x02: // LOAD_B
                     cpu.B = operand;
                     cpu.FLAGZ = cpu.B == 0;
-                    cpu.FLAGN = cpu.B >= 128;
+                    cpu.FLAGN = (cpu.B & 0x80) != 0;
                     break;
 
                 case 0x03: // ADD
@@ -109,6 +113,30 @@ namespace TinyCoreCPU
                     // stub
                     break;
 
+                case 0x14: // AND
+                    cpu.A = (byte)(cpu.A & cpu.B);
+                    cpu.FLAGZ = cpu.A == 0;
+                    cpu.FLAGN = (cpu.A & 0x80) != 0;
+                    break;
+
+                case 0x15: // OR
+                    cpu.A = (byte)(cpu.A | cpu.B);
+                    cpu.FLAGZ = cpu.A == 0;
+                    cpu.FLAGN = (cpu.A & 0x80) != 0;
+                    break;
+
+                case 0x16: // XOR
+                    cpu.A = (byte)(cpu.A ^ cpu.B);
+                    cpu.FLAGZ = cpu.A == 0;
+                    cpu.FLAGN = (cpu.A & 0x80) != 0;
+                    break;
+
+                case 0x17: // NOT
+                    cpu.A = (byte)(~cpu.A);
+                    cpu.FLAGZ = cpu.A == 0;
+                    cpu.FLAGN = (cpu.A & 0x80) != 0;
+                    break;
+
                 case 0x20: // JMP
                     cpu.PC = operand;
                     break;
@@ -122,12 +150,14 @@ namespace TinyCoreCPU
                     if (!cpu.FLAGZ)
                         cpu.PC = operand;
                     break;
+
                 case 0x23: // JMPA
                     if (cpu.A == cpu.B)
                     {
                         cpu.PC = operand;
                     }
                     break;
+
                 case 0xFF: // HLT
                     Console.WriteLine("HALT");
                     Environment.Exit(0);

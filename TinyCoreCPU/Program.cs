@@ -13,12 +13,15 @@ namespace TinyCoreCPU
             // 2. built in program for now since we dont have an assembler yet
             byte[] testProgram = new byte[]
                 {
-                    0x01, 0x05,       // LOAD_A 5
-                    0x02, 0x03,       // LOAD_B 5
-                    0x08, 0x40,       // OUT 64
-                    0x23, 0x00,       // JMPA 0
-                    0x01, 0x00,       // LOAD_A 0
-                    0xFF              // HLT
+                    0x01, 0xF0, // LOAD_A 0xF0
+                    0x02, 0x0F, // LOAD_B 0x0F
+                    0x14,       // AND
+                    0x08, 0x3F, // OUT 0x3F
+                    0x01, 0xAA, // LOAD_A 0xAA
+                    0x02, 0xAA, // LOAD_B 0x55
+                    0x14,       // AND
+                    0x08, 0x3F, // OUT 0x3F
+                    0xFF        // HLT
                 };
 
             // load it
@@ -35,7 +38,7 @@ namespace TinyCoreCPU
             InstructionSet instructions = new InstructionSet();
 
             // 4. create the cpu; see CPU.cs
-            CPU cpu = new CPU(memory, instructions, 1_000);
+            CPU cpu = new CPU(memory, instructions, 1_000_000);
 
             // 5. attach keyboard to port 0
             var keyboard = new KeyboardDriver();
