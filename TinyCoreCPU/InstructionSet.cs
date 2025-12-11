@@ -10,16 +10,25 @@ namespace TinyCoreCPU
         {
             return opcode switch
             {
-                0x01 => true, // LOAD_A
-                0x02 => true, // LOAD_B
-                0x05 => true, // JMP
-                0x06 => true, // JZ
-                0x07 => true, // JNZ
-                0x08 => true, // OUT
-                0x10 => true, // PXX
-                0x11 => true, // PXY
-                0x12 => true, // COL
-                _ => false
+                0x01 => true,  // LOAD_A
+                0x02 => true,  // LOAD_B
+                0x03 => false, // ADD
+                0x04 => false, // SUB
+                0x05 => false, // INC_A
+                0x06 => false, // DEC_A
+                0x07 => true,  // LOAD_MEM
+                0x08 => true,  // OUT
+                0x09 => true,  // IN
+                0x10 => true,  // PXX
+                0x11 => true,  // PXY
+                0x12 => true,  // COL
+                0x13 => false, // DRW
+                0x20 => true,  // JMP
+                0x21 => true,  // JZ
+                0x22 => true,  // JNZ
+                0xFF => false, // HLT
+                0x00 => false, // NOP
+                _ => throw new Exception($"Unknown opcode {opcode:X2}")
             };
         }
 
@@ -27,32 +36,97 @@ namespace TinyCoreCPU
         {
             switch (opcode)
             {
+                case 0x00: // NOP
+                    break;
+
                 case 0x01: // LOAD_A
                     cpu.A = operand;
                     cpu.FLAGZ = cpu.A == 0;
                     cpu.FLAGN = cpu.A >= 128;
                     break;
+
                 case 0x02: // LOAD_B
                     cpu.B = operand;
                     cpu.FLAGZ = cpu.B == 0;
                     cpu.FLAGN = cpu.B >= 128;
                     break;
+
                 case 0x03: // ADD
-                    cpu.A = (byte)((cpu.A + cpu.B) % 256);
+                    cpu.A = (byte)((cpu.A + cpu.B) & 0xFF);
                     cpu.FLAGZ = cpu.A == 0;
                     cpu.FLAGN = cpu.A >= 128;
                     break;
-                case 0x08: // OUT 
+
+                case 0x04: // SUB
+                    cpu.A = (byte)((cpu.A - cpu.B) & 0xFF);
+                    cpu.FLAGZ = cpu.A == 0;
+                    cpu.FLAGN = cpu.A >= 128;
+                    break;
+
+                case 0x05: // INC_A
+                    cpu.A = (byte)((cpu.A + 1) & 0xFF);
+                    cpu.FLAGZ = cpu.A == 0;
+                    cpu.FLAGN = cpu.A >= 128;
+                    break;
+
+                case 0x06: // DEC_A
+                    cpu.A = (byte)((cpu.A - 1) & 0xFF);
+                    cpu.FLAGZ = cpu.A == 0;
+                    cpu.FLAGN = cpu.A >= 128;
+                    break;
+
+                case 0x07: // LOAD_MEM
+                    cpu.A = cpu.memory.Read(operand);
+                    cpu.FLAGZ = cpu.A == 0;
+                    cpu.FLAGN = cpu.A >= 128;
+                    break;
+
+                case 0x08: // OUT
                     cpu.memory.Write(operand, cpu.A);
                     Console.WriteLine($"OUT[{operand}] <= {cpu.A}");
+                    break;
+
+                case 0x09: // IN
+                    cpu.A = cpu.memory.Read(operand);
                     cpu.FLAGZ = cpu.A == 0;
                     cpu.FLAGN = cpu.A >= 128;
                     break;
+
+                case 0x10: // PXX
+                    cpu.PXX = operand;
+                    break;
+
+                case 0x11: // PXY
+                    cpu.PXY = operand;
+                    break;
+
+                case 0x12: // COL
+                    cpu.COL = operand;
+                    break;
+
+                case 0x13: // DRW
+                    // stub
+                    break;
+
+                case 0x20: // JMP
+                    cpu.PC = operand;
+                    break;
+
+                case 0x21: // JZ
+                    if (cpu.FLAGZ)
+                        cpu.PC = operand;
+                    break;
+
+                case 0x22: // JNZ
+                    if (!cpu.FLAGZ)
+                        cpu.PC = operand;
+                    break;
+
                 case 0xFF: // HLT
-                    Console.WriteLine($"HLT");
+                    Console.WriteLine("HALT");
                     Environment.Exit(0);
                     break;
-                case 0x00: break; // NOP
+
                 default:
                     throw new Exception($"Unknown opcode {opcode:X2}");
             }

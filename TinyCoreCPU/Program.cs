@@ -18,6 +18,7 @@ namespace TinyCoreCPU
                     0x08, 0x40,    // OUT 64
                     0x03,          // ADD (A = A + B)
                     0x08, 0x40,    // OUT 64
+                    0x20, 0x00,    // JNZ 0
                     0xFF           // HLT
                 };
 
@@ -35,7 +36,7 @@ namespace TinyCoreCPU
             InstructionSet instructions = new InstructionSet();
 
             // 4. create the cpu; see CPU.cs
-            CPU cpu = new CPU(memory, instructions);
+            CPU cpu = new CPU(memory, instructions, 1_000);
 
             // 5. run the cpu
             cpu.Run();

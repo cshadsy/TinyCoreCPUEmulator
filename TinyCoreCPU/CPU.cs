@@ -1,19 +1,25 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Threading;
 
 namespace TinyCoreCPU
 {
     public class CPU
     {
         public byte A, B; // registers
+        public byte PXX, PXY; // position registers for graphics
+        public byte COL; // color register for graphics
         public ushort PC; // program counter
         public bool FLAGZ, FLAGN, FLAGAO; // flags: zero, negative, awaiting operand
         public Memory memory; // ram
         public InstructionSet instructions; // instruction set
 
+        public double CPUhz = 1_000; // 1 kilohertz
         private byte awaitingOpcode;
 
-        public CPU(Memory memory, InstructionSet instructions)
+        public CPU(Memory memory, InstructionSet instructions, double hz)
         {
+            this.CPUhz = hz;
             this.memory = memory;
             this.instructions = instructions;
             PC = 0;
@@ -21,14 +27,18 @@ namespace TinyCoreCPU
 
         public void Run()
         {
+            Stopwatch sw = Stopwatch.StartNew();
+            double secondsPerCycle = 1.0 / CPUhz;
+
             while (true)
             {
+                double cycleStartTime = sw.Elapsed.TotalSeconds;
+
                 if (!FLAGAO)
                 {
                     byte opcode = memory.Read(PC);
                     PC++;
 
-                    // check if this opcode requires an operand, if not, we will execute it immediately.
                     if (instructions.RequiresOperand(opcode))
                     {
                         FLAGAO = true;
@@ -41,12 +51,20 @@ namespace TinyCoreCPU
                 }
                 else
                 {
-                    // operand fetch
                     byte operand = memory.Read(PC);
                     PC++;
                     instructions.Execute(awaitingOpcode, this, operand);
                     FLAGAO = false;
                 }
+
+                // throttle to approximate 1 MHz
+                double elapsed = sw.Elapsed.TotalSeconds - cycleStartTime;
+                double targetCycleTime = secondsPerCycle; // 1 us per cycle at 1 MHz
+
+                // sleep if CPU is running faster than 1 MHz
+                int sleepMs = (int)((targetCycleTime - elapsed) * 1000);
+                if (sleepMs > 0)
+                    Thread.Sleep(sleepMs);
             }
         }
     }
