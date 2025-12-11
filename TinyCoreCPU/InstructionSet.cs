@@ -27,10 +27,14 @@ namespace TinyCoreCPU
                 0x15 => false, // OR
                 0x16 => false, // XOR
                 0x17 => false, // NOT
+                0x18 => true,  // INC_B
+                0x19 => true,  // DEC_B
                 0x20 => true,  // JMP
                 0x21 => true,  // JZ
                 0x22 => true,  // JNZ
                 0x23 => true,  // JMPA
+                0x24 => false, // MVA
+                0x25 => false, // MVB
                 0xFF => false, // HLT
                 0x00 => false, // NOP
                 _ => throw new Exception($"Unknown opcode {opcode:X2}")
@@ -137,6 +141,18 @@ namespace TinyCoreCPU
                     cpu.FLAGN = (cpu.A & 0x80) != 0;
                     break;
 
+                case 0x18: // INC_B
+                    cpu.B++;
+                    cpu.FLAGZ = cpu.B == 0;
+                    cpu.FLAGN = (cpu.B & 0x80) != 0;
+                    break;
+
+                case 0x19: // DEC_B
+                    cpu.B--;
+                    cpu.FLAGZ = cpu.B == 0;
+                    cpu.FLAGN = (cpu.B & 0x80) != 0;
+                    break;
+
                 case 0x20: // JMP
                     cpu.PC = operand;
                     break;
@@ -156,6 +172,18 @@ namespace TinyCoreCPU
                     {
                         cpu.PC = operand;
                     }
+                    break;
+
+                case 0x24: // MVA
+                    cpu.A = cpu.B;
+                    cpu.FLAGZ = cpu.A == 0;
+                    cpu.FLAGN = (cpu.A & 0x80) != 0;
+                    break;
+
+                case 0x25: // MVB
+                    cpu.B = cpu.A;
+                    cpu.FLAGZ = cpu.B == 0;
+                    cpu.FLAGN = (cpu.B & 0x80) != 0;
                     break;
 
                 case 0xFF: // HLT
