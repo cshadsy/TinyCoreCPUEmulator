@@ -49,8 +49,8 @@ namespace TinyCoreCPU
                     cpu.FLAGN = cpu.A >= 128;
                     break;
                 case 0xFF: // HLT
-                    Environment.Exit(0);
                     Console.WriteLine($"HLT");
+                    Environment.Exit(0);
                     break;
                 case 0x00: break; // NOP
                 default:
