@@ -9,9 +9,9 @@ namespace TinyCoreCPU
     public class CPU
     {
         // registers
-        public byte A, B;
+        public byte A, B, C, D, E, F, G, H;
         public byte PXX, PXY; // graphics position registers
-        public byte COL;       // graphics color
+        public byte COL;       // graphics color register
         public ushort PC;      // program counter
         public bool FLAGZ, FLAGN, FLAGAO; // zero, negative, awaiting operand
 

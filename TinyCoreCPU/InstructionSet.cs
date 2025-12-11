@@ -35,6 +35,8 @@ namespace TinyCoreCPU
                 0x23 => true,  // JMPA
                 0x24 => false, // MVA
                 0x25 => false, // MVB
+                0x26 => true,  // LOADARB
+                0x27 => true,  // MOV
                 0xFF => false, // HLT
                 0x00 => false, // NOP
                 _ => throw new Exception($"Unknown opcode {opcode:X2}")
@@ -184,6 +186,81 @@ namespace TinyCoreCPU
                     cpu.B = cpu.A;
                     cpu.FLAGZ = cpu.B == 0;
                     cpu.FLAGN = (cpu.B & 0x80) != 0;
+                    break;
+
+                case 0x26: // LOADARB
+                    {
+                        // operand here is the register ID
+                        byte regId = operand;
+                        byte value = cpu.memory.Read(cpu.PC++); // fetch second operand, this is bad handling but whatever lmao
+                        switch (regId)
+                        {
+                            case 0x00: cpu.A = value; break;
+                            case 0x01: cpu.B = value; break;
+                            case 0x02: cpu.C = value; break;
+                            case 0x03: cpu.D = value; break;
+                            case 0x04: cpu.E = value; break;
+                            case 0x05: cpu.F = value; break;
+                            case 0x06: cpu.G = value; break;
+                            case 0x07: cpu.H = value; break;
+                            default: throw new Exception($"Unknown register ID {regId:X2}");
+                        }
+
+                        if (regId == 0x00) // A
+                        {
+                            cpu.FLAGZ = cpu.A == 0;
+                            cpu.FLAGN = (cpu.A & 0x80) != 0;
+                        }
+                        else if (regId == 0x01) // B
+                        {
+                            cpu.FLAGZ = cpu.B == 0;
+                            cpu.FLAGN = (cpu.B & 0x80) != 0;
+                        }
+                    }
+                    break;
+
+                case 0x27: // MOV
+                    {
+                        byte srcId = operand;
+                        byte destId = cpu.memory.Read(cpu.PC++); // fetch second operand, again is very very Bad
+
+                        byte value = srcId switch
+                        {
+                            0x00 => cpu.A,
+                            0x01 => cpu.B,
+                            0x02 => cpu.C,
+                            0x03 => cpu.D,
+                            0x04 => cpu.E,
+                            0x05 => cpu.F,
+                            0x06 => cpu.G,
+                            0x07 => cpu.H,
+                            _ => throw new Exception($"Unknown source register ID {srcId:X2}")
+                        };
+
+                        switch (destId)
+                        {
+                            case 0x00: cpu.A = value; break;
+                            case 0x01: cpu.B = value; break;
+                            case 0x02: cpu.C = value; break;
+                            case 0x03: cpu.D = value; break;
+                            case 0x04: cpu.E = value; break;
+                            case 0x05: cpu.F = value; break;
+                            case 0x06: cpu.G = value; break;
+                            case 0x07: cpu.H = value; break;
+                            default: throw new Exception($"Unknown destination register ID {destId:X2}");
+                        }
+
+                        if (destId == 0x00) // A
+                        {
+                            cpu.FLAGZ = cpu.A == 0;
+                            cpu.FLAGN = (cpu.A & 0x80) != 0;
+                        }
+                        else if (destId == 0x01) // B
+                        {
+                            cpu.FLAGZ = cpu.B == 0;
+                            cpu.FLAGN = (cpu.B & 0x80) != 0;
+                        }
+                    }
                     break;
 
                 case 0xFF: // HLT
