@@ -13,9 +13,12 @@ namespace TinyCoreCPU
             // 2. built in program for now since we dont have an assembler yet
             byte[] testProgram = new byte[]
                 {
-                    0x09, 0x00, // IN 0
-                    0x08, 0x40, // OUT 64
-                    0x20, 0x00, // JMP 0
+                    0x01, 0x05,       // LOAD_A 5
+                    0x02, 0x03,       // LOAD_B 5
+                    0x08, 0x40,       // OUT 64
+                    0x23, 0x00,       // JMPA 0
+                    0x01, 0x00,       // LOAD_A 0
+                    0xFF              // HLT
                 };
 
             // load it

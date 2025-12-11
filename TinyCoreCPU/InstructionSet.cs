@@ -26,6 +26,7 @@ namespace TinyCoreCPU
                 0x20 => true,  // JMP
                 0x21 => true,  // JZ
                 0x22 => true,  // JNZ
+                0x23 => true,  // JMPA
                 0xFF => false, // HLT
                 0x00 => false, // NOP
                 _ => throw new Exception($"Unknown opcode {opcode:X2}")
@@ -121,7 +122,12 @@ namespace TinyCoreCPU
                     if (!cpu.FLAGZ)
                         cpu.PC = operand;
                     break;
-
+                case 0x23: // JMPA
+                    if (cpu.A == cpu.B)
+                    {
+                        cpu.PC = operand;
+                    }
+                    break;
                 case 0xFF: // HLT
                     Console.WriteLine("HALT");
                     Environment.Exit(0);
