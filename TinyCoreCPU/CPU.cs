@@ -57,11 +57,11 @@ namespace TinyCoreCPU
                     FLAGAO = false;
                 }
 
-                // throttle to approximate 1 MHz
+                // throttle to approximate clock speed
                 double elapsed = sw.Elapsed.TotalSeconds - cycleStartTime;
-                double targetCycleTime = secondsPerCycle; // 1 us per cycle at 1 MHz
+                double targetCycleTime = secondsPerCycle; // 1 us per cycle at hz
 
-                // sleep if CPU is running faster than 1 MHz
+                // sleep if CPU is running faster than hz
                 int sleepMs = (int)((targetCycleTime - elapsed) * 1000);
                 if (sleepMs > 0)
                     Thread.Sleep(sleepMs);
