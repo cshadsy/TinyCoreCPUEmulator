@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 
 namespace TinyCoreCPU
 {
@@ -12,14 +13,9 @@ namespace TinyCoreCPU
             // 2. built in program for now since we dont have an assembler yet
             byte[] testProgram = new byte[]
                 {
-                    0x01, 0x01,    // LOAD_A 1
-                    0x08, 0x40,    // OUT 64
-                    0x02, 0x01,    // LOAD_B 1
-                    0x08, 0x40,    // OUT 64
-                    0x03,          // ADD (A = A + B)
-                    0x08, 0x40,    // OUT 64
-                    0x20, 0x00,    // JNZ 0
-                    0xFF           // HLT
+                    0x09, 0x00, // IN 0
+                    0x08, 0x40, // OUT 64
+                    0x20, 0x00, // JMP 0
                 };
 
             // load it
@@ -38,8 +34,28 @@ namespace TinyCoreCPU
             // 4. create the cpu; see CPU.cs
             CPU cpu = new CPU(memory, instructions, 1_000);
 
-            // 5. run the cpu
-            cpu.Run();
+            // 5. attach keyboard to port 0
+            var keyboard = new KeyboardDriver();
+            cpu.AttachDevice(0, keyboard);
+
+            // 6. run the cpu in another thread and do an input loop for the host
+            var cpuThread = new System.Threading.Thread(() => cpu.Run());
+            cpuThread.IsBackground = true;
+            cpuThread.Start();
+
+            while (true)
+            {
+                while (Console.KeyAvailable)
+                {
+                    var keyInfo = Console.ReadKey(true);
+                    if (keyInfo.Key == ConsoleKey.Escape)
+                        return;
+
+                    keyboard.KeyDown(keyInfo.Key);
+                }
+
+                System.Threading.Thread.Sleep(1);
+            }
         }
     }
 }

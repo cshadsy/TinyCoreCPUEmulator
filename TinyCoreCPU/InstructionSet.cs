@@ -87,7 +87,7 @@ namespace TinyCoreCPU
                     break;
 
                 case 0x09: // IN
-                    cpu.A = cpu.memory.Read(operand);
+                    cpu.A = cpu.ReadPort(operand);
                     cpu.FLAGZ = cpu.A == 0;
                     cpu.FLAGN = cpu.A >= 128;
                     break;

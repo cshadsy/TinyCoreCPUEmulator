@@ -1,23 +1,32 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 using System.Threading;
 
 namespace TinyCoreCPU
 {
     public class CPU
     {
-        public byte A, B; // registers
-        public byte PXX, PXY; // position registers for graphics
-        public byte COL; // color register for graphics
-        public ushort PC; // program counter
-        public bool FLAGZ, FLAGN, FLAGAO; // flags: zero, negative, awaiting operand
-        public Memory memory; // ram
-        public InstructionSet instructions; // instruction set
+        // registers
+        public byte A, B;
+        public byte PXX, PXY; // graphics position registers
+        public byte COL;       // graphics color
+        public ushort PC;      // program counter
+        public bool FLAGZ, FLAGN, FLAGAO; // zero, negative, awaiting operand
 
-        public double CPUhz = 1_000; // 1 kilohertz
+        // memory and instruction set
+        public Memory memory;
+        public InstructionSet instructions;
+
+        // CPU clock
+        public double CPUhz = 1_000_000; // default 1 MHz
         private byte awaitingOpcode;
 
-        public CPU(Memory memory, InstructionSet instructions, double hz)
+        // Expansion port devices
+        private Dictionary<byte, IDevice> expansionDevices = new Dictionary<byte, IDevice>();
+
+        public CPU(Memory memory, InstructionSet instructions, double hz = 1_000_000)
         {
             this.CPUhz = hz;
             this.memory = memory;
@@ -25,6 +34,28 @@ namespace TinyCoreCPU
             PC = 0;
         }
 
+        // attach a device to an expansion port
+        public void AttachDevice(byte port, IDevice device)
+        {
+            expansionDevices[port] = device;
+        }
+
+        // read from an expansion port (used by the IN/0x09 instruction)
+        public byte ReadPort(byte port)
+        {
+            if (expansionDevices.TryGetValue(port, out var device))
+                return device.Read();
+            return 0;
+        }
+
+        // write to an expansion port (used by the OUT/0x08 instruction)
+        public void WritePort(byte port, byte value)
+        {
+            if (expansionDevices.TryGetValue(port, out var device))
+                device.Write(value);
+        }
+
+        // execution
         public void Run()
         {
             Stopwatch sw = Stopwatch.StartNew();
@@ -36,9 +67,7 @@ namespace TinyCoreCPU
 
                 if (!FLAGAO)
                 {
-                    byte opcode = memory.Read(PC);
-                    PC++;
-
+                    byte opcode = memory.Read(PC++);
                     if (instructions.RequiresOperand(opcode))
                     {
                         FLAGAO = true;
@@ -51,21 +80,26 @@ namespace TinyCoreCPU
                 }
                 else
                 {
-                    byte operand = memory.Read(PC);
-                    PC++;
+                    byte operand = memory.Read(PC++);
                     instructions.Execute(awaitingOpcode, this, operand);
                     FLAGAO = false;
                 }
 
                 // throttle to approximate clock speed
                 double elapsed = sw.Elapsed.TotalSeconds - cycleStartTime;
-                double targetCycleTime = secondsPerCycle; // 1 us per cycle at hz
+                double targetCycleTime = secondsPerCycle;
 
-                // sleep if CPU is running faster than hz
                 int sleepMs = (int)((targetCycleTime - elapsed) * 1000);
                 if (sleepMs > 0)
                     Thread.Sleep(sleepMs);
             }
         }
+    }
+
+    // interface for our expansion port
+    public interface IDevice
+    {
+        byte Read();          // read from device (IN)
+        void Write(byte val); // write to device (OUT)
     }
 }
